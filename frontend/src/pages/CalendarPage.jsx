@@ -49,8 +49,9 @@ const useMediaQuery = (query) => {
 };
 
 const CalendarPage = () => {
-  const [view, setView] = useState("week");
+  const [view, setView] = useState("month");
   const [date, setDate] = useState(new Date(2025, 1, 10));
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const eventStyleGetter = (event) => ({
@@ -70,7 +71,7 @@ const CalendarPage = () => {
   });
 
   return (
-    <div className="max-w-6xl mx-auto ">
+    <div className="max-w-6xl mx-auto">
       <Calendar
         localizer={localizer}
         events={events}
@@ -78,8 +79,9 @@ const CalendarPage = () => {
         endAccessor="end"
         view={view}
         date={date}
-        onView={setView}
+        onView={(newView) => setView(newView)}
         onNavigate={setDate}
+        onSelectEvent={(event) => setSelectedEvent(event)}
         eventPropGetter={eventStyleGetter}
         className="bg-white rounded-xl shadow-lg p-2"
         style={{ height: isMobile ? "70vh" : "80vh" }}
@@ -88,20 +90,44 @@ const CalendarPage = () => {
         defaultView={isMobile ? "day" : "week"}
         views={["month", "week", "day", "agenda"]}
         components={{
-          toolbar: (props) => <CustomToolbar {...props} isMobile={isMobile} />,
+          toolbar: (props) => (
+            <CustomToolbar
+              {...props}
+              isMobile={isMobile}
+              currentView={view}
+              onViewChange={setView}
+            />
+          ),
         }}
       />
+
+      <Modal
+        title="Event Details"
+        open={!!selectedEvent}
+        onCancel={() => setSelectedEvent(null)}
+        footer={null}
+      >
+        {selectedEvent && (
+          <div>
+            <h3 className="text-lg font-bold">{selectedEvent.title}</h3>
+            <p>
+              <strong>Type:</strong> {selectedEvent.type}
+            </p>
+            <p>
+              <strong>Start:</strong>{" "}
+              {moment(selectedEvent.start).format("LLLL")}
+            </p>
+            <p>
+              <strong>End:</strong> {moment(selectedEvent.end).format("LLLL")}
+            </p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
 
-const CustomToolbar = ({ label, onNavigate, onView, isMobile }) => {
-  const [currentView, setCurrentView] = useState("week");
-
-  const handleViewChange = (view) => {
-    setCurrentView(view);
-    onView(view);
-  };
+const CustomToolbar = ({ label, onNavigate, onView, isMobile, view }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -148,8 +174,8 @@ const CustomToolbar = ({ label, onNavigate, onView, isMobile }) => {
         <div className="flex justify-between gap-2 order-3 sm:order-3">
           {isMobile ? (
             <select
-              value={currentView}
-              onChange={(e) => handleViewChange(e.target.value)}
+              value={view}
+              onChange={(e) => onView(e.target.value)}
               className="px-3 py-1.5 border rounded-md bg-white text-gray-700"
             >
               <option value="month">Month</option>
@@ -160,9 +186,9 @@ const CustomToolbar = ({ label, onNavigate, onView, isMobile }) => {
             ["month", "week", "day"].map((v) => (
               <button
                 key={v}
-                onClick={() => handleViewChange(v)}
+                onClick={() => onView(v)}
                 className={`px-4 py-1.5 rounded-md transition-colors ${
-                  currentView === v
+                  view === v
                     ? "bg-blue-500 text-white"
                     : "bg-white text-gray-700 hover:bg-gray-100"
                 }`}
