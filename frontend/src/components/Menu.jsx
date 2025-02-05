@@ -18,7 +18,7 @@ function Menu() {
               location.pathname === "/" ? "text-primary" : "text-white"
             } hover:text-primary transition-all`}
           >
-            <FaHome size={22} />
+            <FaHome size={18} />
             <p className="font-bold">Home</p>
           </li>
         </Link>
@@ -28,7 +28,7 @@ function Menu() {
               location.pathname === "/calendar" ? "text-primary" : "text-white"
             } hover:text-primary transition-all`}
           >
-            <FaRegCalendar size={22} />
+            <FaRegCalendar size={18} />
             <p className="font-bold">Calendar</p>
           </li>
         </Link>
@@ -38,7 +38,7 @@ function Menu() {
               location.pathname === "/profile" ? "text-primary" : "text-white"
             } hover:text-primary transition-all`}
           >
-            <FaRegUser size={22} />
+            <FaRegUser size={18} />
             <p className="font-bold">Profile</p>
           </li>
         </Link>
@@ -54,7 +54,7 @@ function Menu() {
         </Link>
 
         <li className="flex flex-col items-center space-y-2 hover:text-primary transition-all">
-          <FiLogOut size={22} />
+          <FiLogOut size={18} />
           <p className="font-bold">Log Out</p>
         </li>
       </ul>
